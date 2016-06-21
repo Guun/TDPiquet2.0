@@ -22,6 +22,10 @@ public class Player {
 		this.hand.clear();
 		this.numCards = 0;
 	}
+	
+	public String getName(){
+		return this.name;
+	}
 
 	/*
 	 * Add a card to the player's hand.
@@ -43,7 +47,15 @@ public class Player {
 		return true;
 		
 	}
-	
+	public boolean removeCard(int index){
+		if(this.numCards == 0){
+			System.err.println(this.name+"'s hand is empty but removeCard method was called." );
+			System.exit(1);
+		}
+		this.hand.remove(index);
+		this.numCards--;
+		return true;
+	}
 	public int getPoint(){
 		int numClubs = 0;
 		int numDiamonds = 0;
@@ -273,7 +285,7 @@ public class Player {
 		System.out.printf("%s's cards: \n",  this.name);
 		for(int c = 0; c < this.numCards; c++)
 		{
-			System.out.printf(c + ".  " + " %s\n", this.hand.get(c).toString());
+			System.out.printf(c + "." + "%s\n", this.hand.get(c).toString());
 		}
 		System.out.println();
 	}

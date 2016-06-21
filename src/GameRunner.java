@@ -27,7 +27,7 @@ public class GameRunner {
 		
 		ArrayList<Integer> allInputs = new ArrayList<Integer>();
 		
-		for(int game = 0; game < 100; game++){
+		for(int game = 0; game < 1; game++){
 			
 			 ArrayList<Integer> gameInputs = playGame();	//store resulting inputs from playing a game
 			 for(int i : gameInputs){						//add each input from that one game to the arraylist of all inputs
@@ -76,47 +76,60 @@ public class GameRunner {
 		final int MAX_EXCHANGES = 5;
 		Random rand = new Random();
 		int exchanges = rand.nextInt(MAX_EXCHANGES) + 1; //must be at least 1:  ((0 >= exchanges < 5 ) + 1)  therefore ( 1 <= exchanges <= 5 )
-		int randCard = rand.nextInt(12); //position of card in the elder's hand that will soon be replaced
+		int yMaxExchanges = MAX_EXCHANGES - exchanges;
+		int randCard;	//position of card in the elder's hand that will soon be replaced
 		int randTalon = rand.nextInt(talon.hand.size()); //random card from talon that will replace one of the elder's cards
-		
 		ArrayList<Integer> ePrevPositions = new ArrayList<Integer>();
-		ePrevPositions.add(randCard);
+		
+		System.out.println("Elder exchanges to do: " + exchanges);
+		talon.printHand();
+		elderHand.printHand();
+
+	//	exchange(exchanges, elderHand, ePrevPositions)
 		while(exchanges > 0){
-		
-			System.out.print("\nTalon card (Pos:" +randTalon+ "):" +talon.hand.get(randTalon));
-			System.out.print(" will replace card at position " +randCard+ " of the elder's hand (" +elderHand.hand.get(randCard) +" ) \n");
-			System.out.println("Elder Exchanges left: " + (exchanges-1));
-			//System.out.println("Elder hand card being removed: "+ elderHand.hand.get(randCard) +"\n");
 			
+			randCard = rand.nextInt(12);
+			while(ePrevPositions.contains(randCard)){	//ensure a card from the talon will not replace a card previously taken from the talon
+				randCard = rand.nextInt(12);
+			}
+			ePrevPositions.add(randCard);
+			
+			printExchange(randTalon, randCard, elderHand, talon, exchanges);	
 			eRemovedCards.hand.add(elderHand.hand.get(randCard));
-		
-			elderHand.hand.set(randCard, talon.hand.get(randTalon));
-			talon.hand.remove(randTalon);
+			elderHand.hand.set(randCard, talon.hand.get(randTalon));	//replace card in elder's hand with a card from the talon
+			
+			talon.removeCard(randTalon);
 			if(talon.hand.size() > 0){
-				
 				randTalon = rand.nextInt(talon.hand.size());
 			}
 			
-			for(int i = 0; i < ePrevPositions.size(); i++){ //Prevent exchanging card obtained from Talon.
-				if(randCard == ePrevPositions.get(i)){
-					System.out.println("Attempted new pos 'randCard'("+randCard+") clashes with prevPosition[" +i+ "]: "+ePrevPositions.get(i));
-					randCard = rand.nextInt(12);
-					i = 0;
-					System.out.println("Got new attempted new pos 'randCard' : "+randCard);
-				}
-			}
 			exchanges--;
 		}
-		
 		//eRemovedCards.printHand();
+		System.out.println();
 		elderHand.printHand();
 		System.out.print("\nElderHand's removed cards after all exchanges: \n");
-		for(int c = 0; c < eRemovedCards.hand.size(); c++)
+		printRemoved(eRemovedCards);
+		talon.printHand();
+		
+		
+	}
+
+
+	private static void printExchange(int randTalon, int randCard, Player player, Player talon, int exchanges) {
+		System.out.print(talon.getName()+" card (Pos:" +randTalon+ "):" +talon.hand.get(randTalon));
+		System.out.print(" will replace "+player.getName()+" card (Pos:" +randCard+ "):" +player.hand.get(randCard)+"\n");
+		//System.out.print(" will replace card at position " +randCard+ " of the " +player.getName() +"'s hand (" +player.hand.get(randCard) +" ) \n");
+		System.out.println(player.getName()+" exchanges left: " + (exchanges-1));
+		//System.out.println(player.getName()+" hand card being removed: "+ player.hand.get(randCard) +"\n");
+	}
+
+	private static void printRemoved(Player removed){
+		for(int c = 0; c < removed.hand.size(); c++)
 		{
-			System.out.printf(c + ".  " + " %s\n",eRemovedCards.hand.get(c).toString());
+			System.out.printf(c + ".  " + " %s\n",removed.hand.get(c).toString());
 		}
 		System.out.println();
-		
 	}
 
 	@SuppressWarnings("unused")
